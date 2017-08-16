@@ -1,7 +1,7 @@
 # Личный проект «Кекстаграм» [![Build status][travis-image]][travis-url]
 
 * Студент: [Александр Степанов](https://up.htmlacademy.ru/javascript/10/user/359943).
-* Наставник: `Дмитрий Безуглый`.
+* Наставник: [Дмитрий Безуглый](https://htmlacademy.ru/profile/shalfey41).
 
 ---
 
