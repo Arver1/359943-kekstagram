@@ -41,7 +41,7 @@ var hideElement = function (className) {
   }
 };
 createArrayJsObjects(25);
-template = document.getElementbyId('#picture-template');
+template = document.getElementbyId('picture-template');
 createDOMElementsInBlock('.pictures');
 hideElement('.upload-overlay');
 firstElement = document.querySelector('.gallery-overlay').classList.remove('hidden');
