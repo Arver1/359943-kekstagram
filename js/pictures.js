@@ -12,7 +12,7 @@ var template;
 var firstElement;
 var getRandomNumber = function (min, max) {
   var rand = min + Math.random * (max - min + 1);
-  rand = Math.flooor(rand);
+  rand = Math.floor(rand);
   return rand;
 };
 var createArrayJsObjects = function (number) {
@@ -25,12 +25,12 @@ var createArrayJsObjects = function (number) {
   }
 };
 var createDOMElementsInBlock = function (block) {
-  var element = template.content.cloneNode(true);
   var div = document.querySelector(block);
   for (var i = 0; i < pictures.length; i++) {
+    var element = template.cloneNode(true);
     element.querySelector('img').src = pictures[i].url;
     element.querySelector('.picture-likes').textContent = pictures[i].likes;
-    element.querySelector('.picture-comments').textContent = pictures[i].randomComments.length;
+    element.querySelector('.picture-comments').textContent = pictures[i].randomComments.length.toString();
     div.appendChild(element);
   }
 };
@@ -41,7 +41,7 @@ var hideElement = function (className) {
   }
 };
 createArrayJsObjects(25);
-template = document.getElementbyId('picture-template');
+template = document.getElementById('picture-template').content;
 createDOMElementsInBlock('.pictures');
 hideElement('.upload-overlay');
 firstElement = document.querySelector('.gallery-overlay').classList.remove('hidden');
