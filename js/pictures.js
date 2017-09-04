@@ -1,4 +1,6 @@
 'use strict';
+var ESC_KEYCODE = 27;
+var ENTER_KEYCODE = 13;
 var comments = [
   'Всё отлично!',
   'В целом всё неплохо. Но не всё.',
@@ -7,7 +9,8 @@ var comments = [
   'Я поскользнулся на банановой кожуре и уронил фотоаппарат на кота и у меня получилась фотография лучше.',
   'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!'
 ];
-var firstElement;
+var galleryOverlay = document.querySelector('.gallery-overlay');
+var galleryOverlayClose = galleryOverlay.querySelector('.gallery-overlay-close');
 var getRandomNumber = function (min, max) {
   return Math.floor(min + Math.random() * (max - min + 1));
 };
@@ -18,7 +21,7 @@ var createPictures = function (countPictures) {
   var pictures = [];
   for (var i = 0; i < countPictures; i++) {
     pictures[i] = {
-      url: 'photos/{{' + i + '}}.jpg',
+      url: './photos/' + i + '.jpg',
       likes: getRandomNumber(15, 200),
       randomComments: [comments[getRandomNumber(0, 5)], comments[getRandomNumber(0, 5)]]
     };
@@ -39,9 +42,25 @@ var appendPictures = function (container, pictures, templateId) {
 var pictures = createPictures(25);
 appendPictures('.pictures', pictures, 'picture-template');
 hideElement('.upload-overlay');
-firstElement = document.querySelector('.gallery-overlay');
-firstElement.classList.remove('hidden');
-firstElement.querySelector('.gallery-overlay-image').src = pictures[0].url;
-firstElement.querySelector('.likes-count').textContent = pictures[0].likes;
-firstElement.querySelector('.comments-count').textConent = pictures[0].randomComments.length;
+galleryOverlay.classList.remove('hidden');
+galleryOverlay.querySelector('.gallery-overlay-image').src = pictures[0].url;
+galleryOverlay.querySelector('.likes-count').textContent = pictures[0].likes;
+galleryOverlay.querySelector('.comments-count').textContent = pictures[0].randomComments.length;
+var picture = document.querySelectorAll('.picture');
+var closePopup = function () {
+  galleryOverlay.classList.add('hidden');
+}
+var openPopup = function (evt) {
+  alert(evt.currentTarget + ' ' + evt.target);
+
+
+  galleryOverlay.classList.remove('hidden');
+  galleryOverlay.querySelector('.gallery-overlay-image').src = evt.target.currentSrc;
+
+};
+
+for (var i = 0; i < picture.length; i++) {
+  picture[i].addEventListener('click', openPopup);
+}
+galleryOverlayClose.addEventListener('click', closePopup);
 
