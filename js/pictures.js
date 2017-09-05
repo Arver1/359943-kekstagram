@@ -9,6 +9,7 @@ var comments = [
   'Я поскользнулся на банановой кожуре и уронил фотоаппарат на кота и у меня получилась фотография лучше.',
   'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!'
 ];
+var picture = document.querySelector('.pictures');
 var galleryOverlay = document.querySelector('.gallery-overlay');
 var galleryOverlayClose = galleryOverlay.querySelector('.gallery-overlay-close');
 var getRandomNumber = function (min, max) {
@@ -39,28 +40,48 @@ var appendPictures = function (container, pictures, templateId) {
     div.appendChild(element);
   }
 };
+var escClosePopup = function (evt) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    closePopup();
+  }
+};
+var enterClosePopup = function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    closePopup();
+  }
+};
+var closePopup = function () {
+  galleryOverlay.classList.add('hidden');
+  galleryOverlayClose.removeEventListener('click', closePopup);
+  document.removeEventListener('keydown', escClosePopup);
+  galleryOverlayClose.removeEventListener('keydown', enterClosePopup);
+};
+var openPopup = function () {
+  galleryOverlay.classList.remove('hidden');
+  galleryOverlayClose.addEventListener('click', closePopup);
+  galleryOverlayClose.addEventListener('keydown', enterClosePopup);
+  document.addEventListener('keydown', escClosePopup);
+};
+var fillGalleryOverlay = function (evt) {
+  evt.preventDefault();
+  var imgSrc = evt.target;
+  galleryOverlay.querySelector('.gallery-overlay-image').src = imgSrc.src;
+  galleryOverlay.querySelector('.likes-count').textContent = imgSrc.parentNode.querySelector('.picture-likes').textContent;
+  galleryOverlay.querySelector('.comments-count').textContent = imgSrc.parentNode.querySelector('.picture-comments').textContent;
+  openPopup();
+};
 var pictures = createPictures(25);
 appendPictures('.pictures', pictures, 'picture-template');
 hideElement('.upload-overlay');
-galleryOverlay.classList.remove('hidden');
+openPopup();
 galleryOverlay.querySelector('.gallery-overlay-image').src = pictures[0].url;
 galleryOverlay.querySelector('.likes-count').textContent = pictures[0].likes;
 galleryOverlay.querySelector('.comments-count').textContent = pictures[0].randomComments.length;
-var picture = document.querySelectorAll('.picture');
-var closePopup = function () {
-  galleryOverlay.classList.add('hidden');
-}
-var openPopup = function (evt) {
-  alert(evt.currentTarget + ' ' + evt.target);
+picture.addEventListener('click', fillGalleryOverlay);
+picture.addEventListener('keydown', function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    fillGalleryOverlay();
+  }
+});
 
-
-  galleryOverlay.classList.remove('hidden');
-  galleryOverlay.querySelector('.gallery-overlay-image').src = evt.target.currentSrc;
-
-};
-
-for (var i = 0; i < picture.length; i++) {
-  picture[i].addEventListener('click', openPopup);
-}
-galleryOverlayClose.addEventListener('click', closePopup);
 
