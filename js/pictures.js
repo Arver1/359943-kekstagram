@@ -1,4 +1,6 @@
 'use strict';
+var ESC_KEYCODE = 27;
+var ENTER_KEYCODE = 13;
 var comments = [
   'Всё отлично!',
   'В целом всё неплохо. Но не всё.',
@@ -7,7 +9,17 @@ var comments = [
   'Я поскользнулся на банановой кожуре и уронил фотоаппарат на кота и у меня получилась фотография лучше.',
   'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!'
 ];
-var firstElement;
+var picture = document.querySelector('.pictures');
+var galleryOverlay = document.querySelector('.gallery-overlay');
+var galleryOverlayClose = galleryOverlay.querySelector('.gallery-overlay-close');
+var galleryOverlayImage = galleryOverlay.querySelector('.gallery-overlay-image');
+var galleryLikesCount = galleryOverlay.querySelector('.likes-count');
+var galleryCommentsCount = galleryOverlay.querySelector('.comments-count');
+var uploadImage = document.querySelector('.upload-image');
+var uploadOverlay = document.querySelector('.upload-overlay');
+var uploadFormCancel = uploadOverlay.querySelector('.upload-form-cancel');
+var textAreaUploadOverlay = uploadOverlay.querySelector('.upload-form-description');
+var uploadOverlayFocus = 0;
 var getRandomNumber = function (min, max) {
   return Math.floor(min + Math.random() * (max - min + 1));
 };
@@ -18,7 +30,7 @@ var createPictures = function (countPictures) {
   var pictures = [];
   for (var i = 0; i < countPictures; i++) {
     pictures[i] = {
-      url: 'photos/{{' + i + '}}.jpg',
+      url: './photos/' + i + '.jpg',
       likes: getRandomNumber(15, 200),
       randomComments: [comments[getRandomNumber(0, 5)], comments[getRandomNumber(0, 5)]]
     };
@@ -36,12 +48,85 @@ var appendPictures = function (container, pictures, templateId) {
     div.appendChild(element);
   }
 };
+var escClosePopup = function (evt) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    closePopup();
+  }
+};
+var enterClosePopup = function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    closePopup();
+  }
+};
+var closePopup = function () {
+  galleryOverlay.classList.add('hidden');
+  galleryOverlayClose.removeEventListener('click', closePopup);
+  document.removeEventListener('keydown', escClosePopup);
+  galleryOverlayClose.removeEventListener('keydown', enterClosePopup);
+};
+var openPopup = function () {
+  galleryOverlay.classList.remove('hidden');
+  galleryOverlayClose.addEventListener('click', closePopup);
+  galleryOverlayClose.addEventListener('keydown', enterClosePopup);
+  document.addEventListener('keydown', escClosePopup);
+};
+var fillGalleryOverlay = function (evt) {
+  evt.preventDefault();
+  var target = evt.target;
+  while (!target.classList.contains('picture')) {
+    target = target.parentNode;
+  }
+  galleryOverlayImage.src = target.querySelector('img').src;
+  galleryLikesCount.textContent = target.querySelector('.picture-likes').textContent;
+  galleryCommentsCount.textContent = target.querySelector('.picture-comments').textContent;
+  openPopup();
+};
+var uploadEsc = function (evt) {
+  if (evt.keyCode === ESC_KEYCODE && uploadOverlayFocus === 0) {
+    uploadClosePopup();
+  }
+};
+var uploadEscBan = function () {
+  uploadOverlayFocus = 1;
+};
+var uploadEscAllow = function () {
+  uploadOverlayFocus = 0;
+};
+var enterUploadClosePopup = function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    uploadClosePopup();
+  }
+};
+var uploadOpenPopup = function () {
+  uploadImage.classList.add('hidden');
+  uploadOverlay.classList.remove('hidden');
+  uploadFormCancel.addEventListener('click', uploadClosePopup);
+  uploadFormCancel.addEventListener('keydown', enterUploadClosePopup);
+  document.addEventListener('keydown', uploadEsc);
+  textAreaUploadOverlay.addEventListener('focus', uploadEscBan);
+  textAreaUploadOverlay.addEventListener('blur', uploadEscAllow);
+};
+var uploadClosePopup = function () {
+  uploadOverlay.classList.add('hidden');
+  uploadImage.classList.remove('hidden');
+  uploadFormCancel.removeEventListener('click', uploadClosePopup);
+  uploadFormCancel.removeEventListener('keydown', enterUploadClosePopup);
+  document.removeEventListener('keydown', uploadEsc);
+  textAreaUploadOverlay.removeEventListener('focus', uploadEscBan);
+  textAreaUploadOverlay.removeEventListener('blur', uploadEscAllow);
+};
 var pictures = createPictures(25);
 appendPictures('.pictures', pictures, 'picture-template');
 hideElement('.upload-overlay');
-firstElement = document.querySelector('.gallery-overlay');
-firstElement.classList.remove('hidden');
-firstElement.querySelector('.gallery-overlay-image').src = pictures[0].url;
-firstElement.querySelector('.likes-count').textContent = pictures[0].likes;
-firstElement.querySelector('.comments-count').textConent = pictures[0].randomComments.length;
+openPopup();
+galleryOverlayImage.src = pictures[0].url;
+galleryLikesCount.textContent = pictures[0].likes;
+galleryCommentsCount.textContent = pictures[0].randomComments.length;
+picture.addEventListener('click', fillGalleryOverlay);
+picture.addEventListener('keydown', function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    fillGalleryOverlay();
+  }
+});
+uploadImage.addEventListener('click', uploadOpenPopup);
 
