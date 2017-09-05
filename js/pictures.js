@@ -12,6 +12,14 @@ var comments = [
 var picture = document.querySelector('.pictures');
 var galleryOverlay = document.querySelector('.gallery-overlay');
 var galleryOverlayClose = galleryOverlay.querySelector('.gallery-overlay-close');
+var galleryOverlayImage = galleryOverlay.querySelector('.gallery-overlay-image');
+var galleryLikesCount = galleryOverlay.querySelector('.likes-count');
+var galleryCommentsCount = galleryOverlay.querySelector('.comments-count');
+var uploadImage = document.querySelector('.upload-image');
+var uploadOverlay = document.querySelector('.upload-overlay');
+var uploadFormCancel = uploadOverlay.querySelector('.upload-form-cancel');
+var textAreaUploadOverlay = uploadOverlay.querySelector('.upload-form-description');
+var uploadOverlayFocus = 0;
 var getRandomNumber = function (min, max) {
   return Math.floor(min + Math.random() * (max - min + 1));
 };
@@ -64,24 +72,61 @@ var openPopup = function () {
 };
 var fillGalleryOverlay = function (evt) {
   evt.preventDefault();
-  var imgSrc = evt.target;
-  galleryOverlay.querySelector('.gallery-overlay-image').src = imgSrc.src;
-  galleryOverlay.querySelector('.likes-count').textContent = imgSrc.parentNode.querySelector('.picture-likes').textContent;
-  galleryOverlay.querySelector('.comments-count').textContent = imgSrc.parentNode.querySelector('.picture-comments').textContent;
+  var target = evt.target;
+  while (!target.classList.contains('picture')) {
+    target = target.parentNode;
+  }
+  galleryOverlayImage.src = target.querySelector('img').src;
+  galleryLikesCount.textContent = target.querySelector('.picture-likes').textContent;
+  galleryCommentsCount.textContent = target.querySelector('.picture-comments').textContent;
   openPopup();
+};
+var uploadEsc = function (evt) {
+  if (evt.keyCode === ESC_KEYCODE && uploadOverlayFocus === 0) {
+    uploadClosePopup();
+  }
+};
+var uploadEscBan = function () {
+  uploadOverlayFocus = 1;
+};
+var uploadEscAllow = function () {
+  uploadOverlayFocus = 0;
+};
+var enterUploadClosePopup = function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    uploadClosePopup();
+  }
+};
+var uploadOpenPopup = function () {
+  uploadImage.classList.add('hidden');
+  uploadOverlay.classList.remove('hidden');
+  uploadFormCancel.addEventListener('click', uploadClosePopup);
+  uploadFormCancel.addEventListener('keydown', enterUploadClosePopup);
+  document.addEventListener('keydown', uploadEsc);
+  textAreaUploadOverlay.addEventListener('focus', uploadEscBan);
+  textAreaUploadOverlay.addEventListener('blur', uploadEscAllow);
+};
+var uploadClosePopup = function () {
+  uploadOverlay.classList.add('hidden');
+  uploadImage.classList.remove('hidden');
+  uploadFormCancel.removeEventListener('click', uploadClosePopup);
+  uploadFormCancel.removeEventListener('keydown', enterUploadClosePopup);
+  document.removeEventListener('keydown', uploadEsc);
+  textAreaUploadOverlay.removeEventListener('focus', uploadEscBan);
+  textAreaUploadOverlay.removeEventListener('blur', uploadEscAllow);
 };
 var pictures = createPictures(25);
 appendPictures('.pictures', pictures, 'picture-template');
 hideElement('.upload-overlay');
 openPopup();
-galleryOverlay.querySelector('.gallery-overlay-image').src = pictures[0].url;
-galleryOverlay.querySelector('.likes-count').textContent = pictures[0].likes;
-galleryOverlay.querySelector('.comments-count').textContent = pictures[0].randomComments.length;
+galleryOverlayImage.src = pictures[0].url;
+galleryLikesCount.textContent = pictures[0].likes;
+galleryCommentsCount.textContent = pictures[0].randomComments.length;
 picture.addEventListener('click', fillGalleryOverlay);
 picture.addEventListener('keydown', function (evt) {
   if (evt.keyCode === ENTER_KEYCODE) {
     fillGalleryOverlay();
   }
 });
-
+uploadImage.addEventListener('click', uploadOpenPopup);
 
