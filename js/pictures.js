@@ -145,17 +145,20 @@ var sendForm = function (evt) {
   var temp = uploadFormHashtags.value;
   if (temp.length < 2 || temp.length > 104) {
     evt.preventDefault();
+    uploadFormHashtags.style.border = '2px solid red';
   } else {
     temp = temp.split(' ');
     if (temp.length === 1) {
       temp = temp[0];
       hashTemp = temp.split('#');
       if (temp.length > 19 || temp[0] !== '#' || hashTemp.length > 2) {
+        uploadFormHashtags.style.border = '2px solid red';
         evt.preventDefault();
       }
     } else {
       for (var i = 0; i < temp.length; i++) {
         if (temp[i][0] !== '#' || temp[i].length > 19) {
+          uploadFormHashtags.style.border = '2px solid red';
           evt.preventDefault();
           break;
         }
@@ -180,10 +183,13 @@ uploadImage.addEventListener('click', uploadOpenPopup);
 uploadFormDescription.addEventListener('invalid', function () {
   if (uploadFormDescription.validity.tooShort) {
     uploadFormDescription.setCustomValidity('Минимальная длина — 30 символов');
+    uploadFormDescription.style.border = '2px solid red';
   } else if (uploadFormDescription.validity.tooLong) {
     uploadFormDescription.setCustomValidity('Максимальная длина — 100 символов');
+    uploadFormDescription.style.border = '2px solid red';
   } else if (uploadFormDescription.validity.valueMissing) {
     uploadFormDescription.setCustomValidity('Обязательное поле');
+    uploadFormDescription.style.border = '2px solid red';
   } else {
     uploadFormDescription.setCustomValidity('');
   }
@@ -191,12 +197,10 @@ uploadFormDescription.addEventListener('invalid', function () {
 uploadResizeControls.addEventListener('click', uploadSizeControl);
 uploadEffectControls.addEventListener('click', uploadEffectControl);
 uploadFormHashtags.addEventListener('click', function () {
-  alert('хэш-теги не обязательны\n' +
-    'хэш-тег начинается с символа `#` (решётка) и состоит из одного слова\n' +
-    'хэш-теги разделяются пробелами\n' +
-    'один и тот же хэш-тег не может быть использован дважды\n' +
-    'нельзя указать больше пяти хэш-тегов\n' +
-    'максимальная длина одного хэш-тега 20 символов');
+  uploadFormHashtags.style.border = '';
+});
+uploadFormDescription.addEventListener('click', function () {
+  uploadFormDescription.style.border = '';
 });
 uploadForm.addEventListener('submit', sendForm);
 
