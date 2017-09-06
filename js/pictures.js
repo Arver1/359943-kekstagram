@@ -114,14 +114,15 @@ var uploadClosePopup = function () {
   textAreaUploadOverlay.removeEventListener('blur', uploadEscAllow);
 };
 var uploadSizeControl = function (evt) {
+  var target = evt.target;
   var temp;
-  if (evt.target.classList.contains('upload-resize-controls-button-dec')) {
+  if (target.classList.contains('upload-resize-controls-button-dec')) {
     temp = uploadResizeControlsValue.value.replace('%', '') - 25;
     if (temp >= 25 && temp <= 100) {
       effectImagePreview.style.transform = 'scale(' + temp / 100 + ')';
       uploadResizeControlsValue.value = temp + '%';
     }
-  } else if (evt.target.classList.contains('upload-resize-controls-button-inc')) {
+  } else if (target.classList.contains('upload-resize-controls-button-inc')) {
     temp = uploadResizeControlsValue.value.replace('%', '') - 0 + 25;
     if (temp >= 25 && temp <= 100) {
       effectImagePreview.style.transform = 'scale(' + temp / 100 + ')';
@@ -143,7 +144,7 @@ picture.addEventListener('keydown', function (evt) {
   }
 });
 uploadImage.addEventListener('click', uploadOpenPopup);
-uploadFormDescription.addEventListener('ivalid', function () {
+uploadFormDescription.addEventListener('invalid', function () {
   if (uploadFormDescription.validity.tooShort) {
     uploadFormDescription.setCustomValidity('Минимальная длина — 5 символов');
   } else if (uploadFormDescription.validity.tooLong) {
