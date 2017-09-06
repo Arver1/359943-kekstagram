@@ -15,11 +15,16 @@ var galleryOverlayClose = galleryOverlay.querySelector('.gallery-overlay-close')
 var galleryOverlayImage = galleryOverlay.querySelector('.gallery-overlay-image');
 var galleryLikesCount = galleryOverlay.querySelector('.likes-count');
 var galleryCommentsCount = galleryOverlay.querySelector('.comments-count');
-var uploadImage = document.querySelector('.upload-image');
+var uploadImage = document.querySelector('.upload-file');
 var uploadOverlay = document.querySelector('.upload-overlay');
 var uploadFormCancel = uploadOverlay.querySelector('.upload-form-cancel');
 var textAreaUploadOverlay = uploadOverlay.querySelector('.upload-form-description');
 var uploadOverlayFocus = 0;
+var uploadFormDescription = uploadOverlay.querySelector('.upload-form-description');
+var uploadResizeControlsValue = uploadOverlay.querySelector('.upload-resize-controls-value');
+var uploadResizeControls = uploadOverlay.querySelector('.upload-resize-controls');
+var effectImagePreview = uploadOverlay.querySelector('.effect-image-preview');
+var uploadEffectControls = uploadOverlay.querySelector('.upload-effect-controls');
 var getRandomNumber = function (min, max) {
   return Math.floor(min + Math.random() * (max - min + 1));
 };
@@ -92,16 +97,10 @@ var uploadEscBan = function () {
 var uploadEscAllow = function () {
   uploadOverlayFocus = 0;
 };
-var enterUploadClosePopup = function (evt) {
-  if (evt.keyCode === ENTER_KEYCODE) {
-    uploadClosePopup();
-  }
-};
 var uploadOpenPopup = function () {
   uploadImage.classList.add('hidden');
   uploadOverlay.classList.remove('hidden');
   uploadFormCancel.addEventListener('click', uploadClosePopup);
-  uploadFormCancel.addEventListener('keydown', enterUploadClosePopup);
   document.addEventListener('keydown', uploadEsc);
   textAreaUploadOverlay.addEventListener('focus', uploadEscBan);
   textAreaUploadOverlay.addEventListener('blur', uploadEscAllow);
@@ -110,10 +109,25 @@ var uploadClosePopup = function () {
   uploadOverlay.classList.add('hidden');
   uploadImage.classList.remove('hidden');
   uploadFormCancel.removeEventListener('click', uploadClosePopup);
-  uploadFormCancel.removeEventListener('keydown', enterUploadClosePopup);
   document.removeEventListener('keydown', uploadEsc);
   textAreaUploadOverlay.removeEventListener('focus', uploadEscBan);
   textAreaUploadOverlay.removeEventListener('blur', uploadEscAllow);
+};
+var uploadSizeControl = function (evt) {
+  var temp;
+  if (evt.target.classList.contains('upload-resize-controls-button-dec')) {
+    temp = uploadResizeControlsValue.value.replace('%', '') - 25;
+    if (temp >= 25 && temp <= 100) {
+      effectImagePreview.style.transform = 'scale(' + temp / 100 + ')';
+      uploadResizeControlsValue.value = temp + '%';
+    }
+  } else if (evt.target.classList.contains('upload-resize-controls-button-inc')) {
+    temp = uploadResizeControlsValue.value.replace('%', '') - 0 + 25;
+    if (temp >= 25 && temp <= 100) {
+      effectImagePreview.style.transform = 'scale(' + temp / 100 + ')';
+      uploadResizeControlsValue.value = temp + '%';
+    }
+  }
 };
 var pictures = createPictures(25);
 appendPictures('.pictures', pictures, 'picture-template');
@@ -129,4 +143,15 @@ picture.addEventListener('keydown', function (evt) {
   }
 });
 uploadImage.addEventListener('click', uploadOpenPopup);
-
+uploadFormDescription.addEventListener('ivalid', function () {
+  if (uploadFormDescription.validity.tooShort) {
+    uploadFormDescription.setCustomValidity('Минимальная длина — 5 символов');
+  } else if (uploadFormDescription.validity.tooLong) {
+    uploadFormDescription.setCustomValidity('Максимальная длина — 8 символов');
+  } else if (uploadFormDescription.validity.valueMissing) {
+    uploadFormDescription.setCustomValidity('Обязательное поле');
+  } else {
+    uploadFormDescription.setCustomValidity('');
+  }
+});
+uploadResizeControls.addEventListener('click', uploadSizeControl);
