@@ -130,6 +130,14 @@ var uploadSizeControl = function (evt) {
     }
   }
 };
+var uploadEffectControl = function (evt) {
+  effectImagePreview.setAttribute('class', 'effect-image-preview');
+  var target = evt.target;
+  while (!target.tagName.toLowerCase() === 'input') {
+    target = target.parentNode;
+  }
+  effectImagePreview.classList.add('effect-' + target.value);
+};
 var pictures = createPictures(25);
 appendPictures('.pictures', pictures, 'picture-template');
 hideElement('.upload-overlay');
@@ -140,15 +148,15 @@ galleryCommentsCount.textContent = pictures[0].randomComments.length;
 picture.addEventListener('click', fillGalleryOverlay);
 picture.addEventListener('keydown', function (evt) {
   if (evt.keyCode === ENTER_KEYCODE) {
-    fillGalleryOverlay();
+    fillGalleryOverlay(evt);
   }
 });
 uploadImage.addEventListener('click', uploadOpenPopup);
 uploadFormDescription.addEventListener('invalid', function () {
   if (uploadFormDescription.validity.tooShort) {
-    uploadFormDescription.setCustomValidity('Минимальная длина — 5 символов');
+    uploadFormDescription.setCustomValidity('Минимальная длина — 30 символов');
   } else if (uploadFormDescription.validity.tooLong) {
-    uploadFormDescription.setCustomValidity('Максимальная длина — 8 символов');
+    uploadFormDescription.setCustomValidity('Максимальная длина — 100 символов');
   } else if (uploadFormDescription.validity.valueMissing) {
     uploadFormDescription.setCustomValidity('Обязательное поле');
   } else {
@@ -156,3 +164,5 @@ uploadFormDescription.addEventListener('invalid', function () {
   }
 });
 uploadResizeControls.addEventListener('click', uploadSizeControl);
+uploadEffectControls.addEventListener('click', uploadEffectControl);
+
