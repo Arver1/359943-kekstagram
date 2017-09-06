@@ -25,6 +25,8 @@ var uploadResizeControlsValue = uploadOverlay.querySelector('.upload-resize-cont
 var uploadResizeControls = uploadOverlay.querySelector('.upload-resize-controls');
 var effectImagePreview = uploadOverlay.querySelector('.effect-image-preview');
 var uploadEffectControls = uploadOverlay.querySelector('.upload-effect-controls');
+var uploadFormHashtags = uploadOverlay.querySelector('.upload-form-hashtags');
+var uploadForm = document.querySelector('.upload-form');
 var getRandomNumber = function (min, max) {
   return Math.floor(min + Math.random() * (max - min + 1));
 };
@@ -138,6 +140,29 @@ var uploadEffectControl = function (evt) {
   }
   effectImagePreview.classList.add('effect-' + target.value);
 };
+var sendForm = function (evt) {
+  var hashTemp;
+  var temp = uploadFormHashtags.value;
+  if (temp.length < 2 || temp.length > 104) {
+    evt.preventDefault();
+  } else {
+    temp = temp.split(' ');
+    if (temp.length === 1) {
+      temp = temp[0];
+      hashTemp = temp.split('#');
+      if (temp.length > 19 || temp[0] !== '#' || hashTemp.length > 2) {
+        evt.preventDefault();
+      }
+    } else {
+      for (var i = 0; i < temp.length; i++) {
+        if (temp[i][0] !== '#' || temp[i].length > 19) {
+          evt.preventDefault();
+          break;
+        }
+      }
+    }
+  }
+};
 var pictures = createPictures(25);
 appendPictures('.pictures', pictures, 'picture-template');
 hideElement('.upload-overlay');
@@ -165,4 +190,13 @@ uploadFormDescription.addEventListener('invalid', function () {
 });
 uploadResizeControls.addEventListener('click', uploadSizeControl);
 uploadEffectControls.addEventListener('click', uploadEffectControl);
+uploadFormHashtags.addEventListener('click', function () {
+  alert('хэш-теги не обязательны\n' +
+    'хэш-тег начинается с символа `#` (решётка) и состоит из одного слова\n' +
+    'хэш-теги разделяются пробелами\n' +
+    'один и тот же хэш-тег не может быть использован дважды\n' +
+    'нельзя указать больше пяти хэш-тегов\n' +
+    'максимальная длина одного хэш-тега 20 символов');
+});
+uploadForm.addEventListener('submit', sendForm);
 
