@@ -157,14 +157,28 @@ var sendForm = function (evt) {
       }
     } else {
       for (var i = 0; i < temp.length; i++) {
-        if (temp[i][0] !== '#' || temp[i].length > 19) {
+        hashTemp = temp[i].split('#');
+        if (temp[i][0] !== '#' || temp[i].length > 19 || temp[i].length < 2 || hashTemp.length > 2) {
           uploadFormHashtags.style.border = '2px solid red';
           evt.preventDefault();
           break;
         }
       }
+      for (i = 0; i < temp.length; i++) {
+        for (var j = i + 1; j < temp.length; j++) {
+          if (temp[i] === temp[j]) {
+            uploadFormHashtags.style.border = '2px solid red';
+            evt.preventDefault();
+            i = temp.length + 1;
+            break;
+          }
+        }
+      }
     }
   }
+  uploadForm.reset();
+  effectImagePreview.setAttribute('class', 'effectImagePreview');
+  effectImagePreview.style.transform = 'scale(1)';
 };
 var pictures = createPictures(25);
 appendPictures('.pictures', pictures, 'picture-template');
