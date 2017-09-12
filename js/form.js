@@ -15,7 +15,6 @@
   var uploadEffectLevelPin = uploadForm.querySelector('.upload-effect-level-pin');
   var uploadEffectLine = uploadForm.querySelector('.upload-effect-level-line');
   var uploadEffectVal = uploadForm.querySelector('.upload-effect-level-val');
-  var effectImagePreview = uploadOverlay.querySelector('.effect-image-preview');
   var uploadOverlayFocus = 0;
   var startCoordsX;
   var classFilterName;
@@ -36,67 +35,8 @@
       }
     }
   };
-  var onMouseMove = function (evt) {
-    evt.preventDefault();
-    var temp;
-    var shift = evt.clientX - startCoordsX;
-    startCoordsX = evt.clientX;
-    temp = uploadEffectLevelPin.offsetLeft + shift;
-    if (temp >= uploadEffectLevelPin.offsetWidth / 2 && temp <= uploadEffectLine.offsetWidth + (uploadEffectLevelPin.offsetWidth / 2)) {
-      console.log(temp + '_____: ' + uploadEffectLine.offsetWidth);
-      uploadEffectLevelPin.style.left = uploadEffectLevelPin.offsetLeft + shift + 'px';
-    }
-  };
-  var onMouseUp = function (evt) {
-    evt.preventDefault();
-    uploadEffectLevel.removeEventListener('mousemove', onMouseMove);
-    uploadEffectLevel.removeEventListener('mouseup', onMouseUp);
-  };
-  var onEffectLevelClick = function (evt) {
-    evt.stopPropagation();
-    startCoordsX = evt.clientX - uploadEffectLine.getBoundingClientRect().left;
-    if (startCoordsX >= 0 && startCoordsX <= uploadEffectLine.offsetWidth) {
-      uploadEffectLevelPin.style.left = startCoordsX + 'px';
-      uploadEffectLevelPin.style.opacity = '0.1';
-      uploadEffectVal.style.width = uploadEffectLevelPin.offsetLeft + 'px';
-      switch (classFilterName) {
-        case 'effect-chrome': {
-          uploadOverlay.querySelector('.effect-chrome').style.filter = 'grayscale(' + uploadEffectVal.offsetWidth * 100 / uploadEffectLine.offsetWidth + '%)'; break;
-        }
-        case 'effect-sepia': {
-          uploadOverlay.querySelector('.effect-sepia').style.filter = 'sepia(' + uploadEffectVal.offsetWidth * 100 / uploadEffectLine.offsetWidth + '%)'; break;
-        }
-        case 'effect-marvin': {
-          uploadOverlay.querySelector('.effect-marvin').style.filter = 'invert(' + uploadEffectVal.offsetWidth * 100 / uploadEffectLine.offsetWidth + '%)'; break;
-        }
-        case 'effect-phobos': {
-          uploadOverlay.querySelector('.effect-phobos').style.filter = 'blur(' + 3 / uploadEffectLine.offsetWidth * uploadEffectVal.offsetWidth + 'px)'; break;
-        }
-        case 'effect-heat': {
-          uploadOverlay.querySelector('.effect-heat').style.filter = 'brightness(' + 3 / uploadEffectLine.offsetWidth * uploadEffectVal.offsetWidth + ')'; break;
-        }
-      }
-    }
-  };
   var uploadEffectControl = function (evt) {
     effectImagePreview.style = 'none';
-    switch (classFilterName) {
-      case 'effect-chrome': {
-        uploadOverlay.querySelector('.effect-chrome').style.filter = 'grayscale(100%)'; break;
-      }
-      case 'effect-sepia': {
-        uploadOverlay.querySelector('.effect-sepia').style.filter = 'sepia(100%)'; break;
-      }
-      case 'effect-marvin': {
-        uploadOverlay.querySelector('.effect-marvin').style.filter = 'invert(100%)'; break;
-      }
-      case 'effect-phobos': {
-        uploadOverlay.querySelector('.effect-phobos').style.filter = 'blur(5px)'; break;
-      }
-      case 'effect-heat': {
-        uploadOverlay.querySelector('.effect-heat').style.filter = 'brightness(3)'; break;
-      }
-    }
     effectImagePreview.setAttribute('class', 'effect-image-preview');
     var target = evt.target;
     while (!target.tagName.toLowerCase() === 'input') {
@@ -108,7 +48,47 @@
       uploadEffectLevel.classList.remove('hidden');
       classFilterName = 'effect-' + target.value;
       effectImagePreview.classList.add(classFilterName);
-      uploadEffectLevel.addEventListener('click', onEffectLevelClick);
+      uploadEffectLevelPin.addEventListener('mousedown', function (downEvt) {
+        startCoordsX = downEvt.clientX;
+        var onEffectLevelMove = function (moveEvt) {
+          var shift = moveEvt.clientX - startCoordsX;
+          startCoordsX = moveEvt.clientX;
+          var temp = uploadEffectLevelPin.offsetLeft + shift;
+          if (temp >= 0 && temp <= uploadEffectLine.offsetWidth) {
+            uploadEffectLevelPin.style.left = uploadEffectLevelPin.offsetLeft + shift + 'px';
+            uploadEffectLevelPin.style.opacity = '0.1';
+            uploadEffectVal.style.width = uploadEffectLevelPin.offsetLeft + 'px';
+            switch (classFilterName) {
+              case 'effect-chrome': {
+                uploadOverlay.querySelector('.effect-chrome').style.filter = 'grayscale(' + uploadEffectVal.offsetWidth * 100 / uploadEffectLine.offsetWidth + '%)';
+                break;
+              }
+              case 'effect-sepia': {
+                uploadOverlay.querySelector('.effect-sepia').style.filter = 'sepia(' + uploadEffectVal.offsetWidth * 100 / uploadEffectLine.offsetWidth + '%)';
+                break;
+              }
+              case 'effect-marvin': {
+                uploadOverlay.querySelector('.effect-marvin').style.filter = 'invert(' + uploadEffectVal.offsetWidth * 100 / uploadEffectLine.offsetWidth + '%)';
+                break;
+              }
+              case 'effect-phobos': {
+                uploadOverlay.querySelector('.effect-phobos').style.filter = 'blur(' + 3 / uploadEffectLine.offsetWidth * uploadEffectVal.offsetWidth + 'px)';
+                break;
+              }
+              case 'effect-heat': {
+                uploadOverlay.querySelector('.effect-heat').style.filter = 'brightness(' + 3 / uploadEffectLine.offsetWidth * uploadEffectVal.offsetWidth + ')';
+                break;
+              }
+            }
+          }
+        };
+        var onEffectLevelUp = function () {
+          document.removeEventListener('mousemove', onEffectLevelMove);
+          document.removeEventListener('mouseup', onEffectLevelUp);
+        };
+        document.addEventListener('mousemove', onEffectLevelMove);
+        document.addEventListener('mouseup', onEffectLevelUp);
+      });
     }
   };
   var sendForm = function (evt) {
@@ -169,7 +149,6 @@
     document.removeEventListener('keydown', uploadEsc);
     textAreaUploadOverlay.removeEventListener('focus', uploadEscBan);
     textAreaUploadOverlay.removeEventListener('blur', uploadEscAllow);
-    uploadEffectLevel.removeEventListener('click', onEffectLevelClick);
   };
   uploadResizeControls.addEventListener('click', uploadSizeControl);
   uploadEffectControls.addEventListener('click', uploadEffectControl);
