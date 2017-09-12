@@ -17,6 +17,7 @@
   var uploadEffectVal = uploadForm.querySelector('.upload-effect-level-val');
   var uploadOverlayFocus = 0;
   var startCoordsX;
+  var classFilterName;
   var uploadSizeControl = function (evt) {
     var target = evt.target;
     var temp;
@@ -50,27 +51,26 @@
     uploadEffectLevel.removeEventListener('mousemove', onMouseMove);
     uploadEffectLevel.removeEventListener('mouseup', onMouseUp);
   };
-  var onEffectLevelClick = function (evt, target, classFilterName) {
+  var onEffectLevelClick = function (evt) {
     startCoordsX = evt.clientX - uploadEffectLine.getBoundingClientRect().left;
     if (startCoordsX >= 0 && startCoordsX <= uploadEffectLine.offsetWidth) {
       uploadEffectLevelPin.style.left = startCoordsX + 'px';
       uploadEffectLevelPin.style.opacity = '0.1';
       uploadEffectVal.style.width = uploadEffectLevelPin.offsetLeft + 'px';
-      switch (target.value) {
-        case 'chrome': {
-          console.log(uploadEffectLine.offsetWidth * 100 / uploadEffectVal.offsetWidth);
-         uploadOverlay.querySelector('.' + classFilterName).filter = 'grayscale(' + uploadEffectLine.offsetWidth * 100 / uploadEffectVal.offsetWidth + '%)'; break;
+      switch (classFilterName) {
+        case 'effect-chrome': {
+          uploadOverlay.querySelector('.' + classFilterName).style.filter = 'grayscale(' + uploadEffectVal.offsetWidth * 100 / uploadEffectLine.offsetWidth + '%)'; break;
         }
-        case 'sepia': {
-          console.log('sepia'); break;
+        case 'effect-sepia': {
+          uploadOverlay.querySelector('.' + classFilterName).style.filter = 'sepia(' + uploadEffectVal.offsetWidth * 100 / uploadEffectLine.offsetWidth + '%)'; break;
         }
-        case 'marvin': {
-          console.log('marvin'); break;
+        case 'effect-marvin': {
+          uploadOverlay.querySelector('.' + classFilterName).style.filter = 'invert(' + uploadEffectVal.offsetWidth * 100 / uploadEffectLine.offsetWidth + '%)'; break;
         }
-        case 'phobos': {
+        case 'effect-phobos': {
           console.log('phobos'); break;
         }
-        case 'heat': {
+        case 'effect-heat': {
           console.log('heat'); break;
         }
       }
@@ -79,9 +79,9 @@
   var uploadEffectControl = function (evt) {
     effectImagePreview.setAttribute('class', 'effect-image-preview');
     var target = evt.target;
-    var classFilterName;
     while (!target.tagName.toLowerCase() === 'input') {
       target = target.parentNode;
+      evt.stopImmediatePropagation();
     }
     if (target.value === 'none') {
       uploadEffectLevel.classList.add('hidden');
@@ -89,9 +89,9 @@
       uploadEffectLevel.classList.remove('hidden');
       classFilterName = 'effect-' + target.value;
       effectImagePreview.classList.add(classFilterName);
-      uploadEffectLevel.addEventListener('click', onEffectLevelClick(evt, target,classFilterName));
     }
   };
+  uploadEffectLevel.addEventListener('click', onEffectLevelClick);
   var sendForm = function (evt) {
     var hashTemp;
     var temp = uploadFormHashtags.value;
