@@ -38,23 +38,23 @@
   var effectLevelDefault = function () {
     switch (classFilterName) {
       case 'effect-chrome': {
-        uploadOverlay.querySelector('.effect-chrome').style.filter = 'grayscale(100%)';
+        effectImagePreview.style.filter = 'grayscale(100%)';
         break;
       }
       case 'effect-sepia': {
-        uploadOverlay.querySelector('.effect-sepia').style.filter = 'sepia(100%)';
+        effectImagePreview.style.filter = 'sepia(100%)';
         break;
       }
       case 'effect-marvin': {
-        uploadOverlay.querySelector('.effect-marvin').style.filter = 'invert(100%)';
+        effectImagePreview.style.filter = 'invert(100%)';
         break;
       }
       case 'effect-phobos': {
-        uploadOverlay.querySelector('.effect-phobos').style.filter = 'blur(3px)';
+        effectImagePreview.style.filter = 'blur(3px)';
         break;
       }
       case 'effect-heat': {
-        uploadOverlay.querySelector('.effect-heat').style.filter = 'brightness(3)';
+        effectImagePreview.style.filter = 'brightness(3)';
         break;
       }
     }
@@ -66,9 +66,6 @@
     effectImagePreview.style = 'none';
     effectImagePreview.setAttribute('class', 'effect-image-preview');
     var target = evt.target;
-    while (!target.tagName.toLowerCase() === 'input') {
-      target = target.parentNode;
-    }
     if (target.value === 'none') {
       uploadEffectLevel.classList.add('hidden');
     } else {
@@ -76,32 +73,32 @@
       classFilterName = 'effect-' + target.value;
       effectImagePreview.classList.add(classFilterName);
       effectLevelDefault();
-      uploadEffectLevel.addEventListener('click', stopBubble);
       uploadEffectLevelPin.addEventListener('mousedown', function (downEvt) {
         startCoordsX = downEvt.clientX;
         var onEffectLevelMove = function (moveEvt) {
           var shift = moveEvt.clientX - startCoordsX;
           startCoordsX = moveEvt.clientX;
           var temp = uploadEffectLevelPin.offsetLeft + shift;
-          if (temp >= 0 && temp <= uploadEffectLine.offsetWidth) {
+          var rect = uploadEffectLine.getBoundingClientRect().left;
+          if (temp >= 0 && temp <= uploadEffectLine.offsetWidth && moveEvt.clientX >= rect && moveEvt.clientX <= rect + uploadEffectLine.offsetWidth) {
             uploadEffectLevelPin.style.left = uploadEffectLevelPin.offsetLeft + shift + 'px';
             uploadEffectLevelPin.style.opacity = '0.1';
             uploadEffectVal.style.width = uploadEffectLevelPin.offsetLeft + 'px';
             switch (classFilterName) {
               case 'effect-chrome': {
-                uploadOverlay.querySelector('.effect-chrome').style.filter = 'grayscale(' + uploadEffectVal.offsetWidth * 100 / uploadEffectLine.offsetWidth + '%)';
+                effectImagePreview.style.filter = 'grayscale(' + uploadEffectVal.offsetWidth * 100 / uploadEffectLine.offsetWidth + '%)';
                 break;
               }
               case 'effect-sepia': {
-                uploadOverlay.querySelector('.effect-sepia').style.filter = 'sepia(' + uploadEffectVal.offsetWidth * 100 / uploadEffectLine.offsetWidth + '%)';
+                effectImagePreview.style.filter = 'sepia(' + uploadEffectVal.offsetWidth * 100 / uploadEffectLine.offsetWidth + '%)';
                 break;
               }
               case 'effect-marvin': {
-                uploadOverlay.querySelector('.effect-marvin').style.filter = 'invert(' + uploadEffectVal.offsetWidth * 100 / uploadEffectLine.offsetWidth + '%)';
+                effectImagePreview.style.filter = 'invert(' + uploadEffectVal.offsetWidth * 100 / uploadEffectLine.offsetWidth + '%)';
                 break;
               }
               case 'effect-phobos': {
-                uploadOverlay.querySelector('.effect-phobos').style.filter = 'blur(' + 3 / uploadEffectLine.offsetWidth * uploadEffectVal.offsetWidth + 'px)';
+                effectImagePreview.style.filter = 'blur(' + 3 / uploadEffectLine.offsetWidth * uploadEffectVal.offsetWidth + 'px)';
                 break;
               }
               case 'effect-heat': {
@@ -119,9 +116,6 @@
         document.addEventListener('mouseup', onEffectLevelUp);
       });
     }
-  };
-  var stopBubble = function (evt) {
-    evt.stopPropagation();
   };
   var sendForm = function (evt) {
     var hashTemp;
@@ -183,7 +177,7 @@
     textAreaUploadOverlay.removeEventListener('blur', uploadEscAllow);
   };
   uploadResizeControls.addEventListener('click', uploadSizeControl);
-  uploadEffectControls.addEventListener('click', uploadEffectControl);
+  uploadEffectControls.addEventListener('change', uploadEffectControl);
   uploadFormDescription.addEventListener('invalid', function () {
     if (uploadFormDescription.validity.tooShort) {
       uploadFormDescription.setCustomValidity('Минимальная длина — 30 символов');
