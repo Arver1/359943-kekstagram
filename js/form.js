@@ -60,6 +60,7 @@
     }
     uploadEffectLevelPin.style.left = uploadEffectLine.offsetWidth + 'px';
     uploadEffectVal.style.width = uploadEffectLine.offsetWidth + 'px';
+    uploadResizeControlsValue.value = '100%';
   };
   var uploadEffectControl = function (evt) {
     effectImagePreview.style = 'none';
