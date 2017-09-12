@@ -15,6 +15,7 @@
   var uploadEffectLevelPin = uploadForm.querySelector('.upload-effect-level-pin');
   var uploadEffectLine = uploadForm.querySelector('.upload-effect-level-line');
   var uploadEffectVal = uploadForm.querySelector('.upload-effect-level-val');
+  var effectImagePreview = uploadOverlay.querySelector('.effect-image-preview');
   var uploadOverlayFocus = 0;
   var startCoordsX;
   var classFilterName;
@@ -52,6 +53,7 @@
     uploadEffectLevel.removeEventListener('mouseup', onMouseUp);
   };
   var onEffectLevelClick = function (evt) {
+    evt.stopPropagation();
     startCoordsX = evt.clientX - uploadEffectLine.getBoundingClientRect().left;
     if (startCoordsX >= 0 && startCoordsX <= uploadEffectLine.offsetWidth) {
       uploadEffectLevelPin.style.left = startCoordsX + 'px';
@@ -59,29 +61,46 @@
       uploadEffectVal.style.width = uploadEffectLevelPin.offsetLeft + 'px';
       switch (classFilterName) {
         case 'effect-chrome': {
-          uploadOverlay.querySelector('.' + classFilterName).style.filter = 'grayscale(' + uploadEffectVal.offsetWidth * 100 / uploadEffectLine.offsetWidth + '%)'; break;
+          uploadOverlay.querySelector('.effect-chrome').style.filter = 'grayscale(' + uploadEffectVal.offsetWidth * 100 / uploadEffectLine.offsetWidth + '%)'; break;
         }
         case 'effect-sepia': {
-          uploadOverlay.querySelector('.' + classFilterName).style.filter = 'sepia(' + uploadEffectVal.offsetWidth * 100 / uploadEffectLine.offsetWidth + '%)'; break;
+          uploadOverlay.querySelector('.effect-sepia').style.filter = 'sepia(' + uploadEffectVal.offsetWidth * 100 / uploadEffectLine.offsetWidth + '%)'; break;
         }
         case 'effect-marvin': {
-          uploadOverlay.querySelector('.' + classFilterName).style.filter = 'invert(' + uploadEffectVal.offsetWidth * 100 / uploadEffectLine.offsetWidth + '%)'; break;
+          uploadOverlay.querySelector('.effect-marvin').style.filter = 'invert(' + uploadEffectVal.offsetWidth * 100 / uploadEffectLine.offsetWidth + '%)'; break;
         }
         case 'effect-phobos': {
-          console.log('phobos'); break;
+          uploadOverlay.querySelector('.effect-phobos').style.filter = 'blur(' + 3 / uploadEffectLine.offsetWidth * uploadEffectVal.offsetWidth + 'px)'; break;
         }
         case 'effect-heat': {
-          console.log('heat'); break;
+          uploadOverlay.querySelector('.effect-heat').style.filter = 'brightness(' + 3 / uploadEffectLine.offsetWidth * uploadEffectVal.offsetWidth + ')'; break;
         }
       }
     }
   };
   var uploadEffectControl = function (evt) {
+    effectImagePreview.style = 'none';
+    switch (classFilterName) {
+      case 'effect-chrome': {
+        uploadOverlay.querySelector('.effect-chrome').style.filter = 'grayscale(100%)'; break;
+      }
+      case 'effect-sepia': {
+        uploadOverlay.querySelector('.effect-sepia').style.filter = 'sepia(100%)'; break;
+      }
+      case 'effect-marvin': {
+        uploadOverlay.querySelector('.effect-marvin').style.filter = 'invert(100%)'; break;
+      }
+      case 'effect-phobos': {
+        uploadOverlay.querySelector('.effect-phobos').style.filter = 'blur(5px)'; break;
+      }
+      case 'effect-heat': {
+        uploadOverlay.querySelector('.effect-heat').style.filter = 'brightness(3)'; break;
+      }
+    }
     effectImagePreview.setAttribute('class', 'effect-image-preview');
     var target = evt.target;
     while (!target.tagName.toLowerCase() === 'input') {
       target = target.parentNode;
-      evt.stopImmediatePropagation();
     }
     if (target.value === 'none') {
       uploadEffectLevel.classList.add('hidden');
@@ -89,9 +108,9 @@
       uploadEffectLevel.classList.remove('hidden');
       classFilterName = 'effect-' + target.value;
       effectImagePreview.classList.add(classFilterName);
+      uploadEffectLevel.addEventListener('click', onEffectLevelClick);
     }
   };
-  uploadEffectLevel.addEventListener('click', onEffectLevelClick);
   var sendForm = function (evt) {
     var hashTemp;
     var temp = uploadFormHashtags.value;
