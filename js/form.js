@@ -1,6 +1,7 @@
 'use strict';
 (function () {
-  var uploadOverlay = document.querySelector('.upload-overlay');
+  var uploadForm = document.querySelector('.upload-form');
+  var uploadOverlay = uploadForm.querySelector('.upload-overlay');
   var uploadResizeControlsValue = uploadOverlay.querySelector('.upload-resize-controls-value');
   var effectImagePreview = uploadOverlay.querySelector('.effect-image-preview');
   var uploadFormCancel = uploadOverlay.querySelector('.upload-form-cancel');
@@ -9,9 +10,14 @@
   var uploadEffectControls = uploadOverlay.querySelector('.upload-effect-controls');
   var uploadFormDescription = uploadOverlay.querySelector('.upload-form-description');
   var uploadFormHashtags = uploadOverlay.querySelector('.upload-form-hashtags');
-  var uploadImage = document.querySelector('.upload-file');
-  var uploadForm = document.querySelector('.upload-form');
+  var uploadImage = uploadForm.querySelector('.upload-file');
+  var uploadEffectLevel = uploadForm.querySelector('.upload-effect-level');
+  var uploadEffectLevelPin = uploadForm.querySelector('.upload-effect-level-pin');
+  var uploadEffectLine = uploadForm.querySelector('.upload-effect-level-line');
+  var uploadEffectVal = uploadForm.querySelector('.upload-effect-level-val');
   var uploadOverlayFocus = 0;
+  var startCoordsX;
+  var classFilterName;
   var uploadSizeControl = function (evt) {
     var target = evt.target;
     var temp;
@@ -29,13 +35,87 @@
       }
     }
   };
+  var effectLevelDefault = function () {
+    switch (classFilterName) {
+      case 'effect-chrome': {
+        effectImagePreview.style.filter = 'grayscale(100%)';
+        break;
+      }
+      case 'effect-sepia': {
+        effectImagePreview.style.filter = 'sepia(100%)';
+        break;
+      }
+      case 'effect-marvin': {
+        effectImagePreview.style.filter = 'invert(100%)';
+        break;
+      }
+      case 'effect-phobos': {
+        effectImagePreview.style.filter = 'blur(3px)';
+        break;
+      }
+      case 'effect-heat': {
+        effectImagePreview.style.filter = 'brightness(3)';
+        break;
+      }
+    }
+    uploadEffectLevelPin.style.left = uploadEffectLine.offsetWidth + 'px';
+    uploadEffectVal.style.width = uploadEffectLine.offsetWidth + 'px';
+    uploadResizeControlsValue.value = '100%';
+  };
   var uploadEffectControl = function (evt) {
+    effectImagePreview.style = 'none';
     effectImagePreview.setAttribute('class', 'effect-image-preview');
     var target = evt.target;
-    while (!target.tagName.toLowerCase() === 'input') {
-      target = target.parentNode;
+    if (target.value === 'none') {
+      uploadEffectLevel.classList.add('hidden');
+    } else {
+      uploadEffectLevel.classList.remove('hidden');
+      classFilterName = 'effect-' + target.value;
+      effectImagePreview.classList.add(classFilterName);
+      effectLevelDefault();
+      uploadEffectLevelPin.addEventListener('mousedown', function (downEvt) {
+        startCoordsX = downEvt.clientX;
+        var onEffectLevelMove = function (moveEvt) {
+          var shift = moveEvt.clientX - startCoordsX;
+          startCoordsX = moveEvt.clientX;
+          var temp = uploadEffectLevelPin.offsetLeft + shift;
+          var rect = uploadEffectLine.getBoundingClientRect().left;
+          if (temp >= 0 && temp <= uploadEffectLine.offsetWidth && moveEvt.clientX >= rect && moveEvt.clientX <= rect + uploadEffectLine.offsetWidth) {
+            uploadEffectLevelPin.style.left = uploadEffectLevelPin.offsetLeft + shift + 'px';
+            uploadEffectLevelPin.style.opacity = '0.1';
+            uploadEffectVal.style.width = uploadEffectLevelPin.offsetLeft + 'px';
+            switch (classFilterName) {
+              case 'effect-chrome': {
+                effectImagePreview.style.filter = 'grayscale(' + uploadEffectVal.offsetWidth * 100 / uploadEffectLine.offsetWidth + '%)';
+                break;
+              }
+              case 'effect-sepia': {
+                effectImagePreview.style.filter = 'sepia(' + uploadEffectVal.offsetWidth * 100 / uploadEffectLine.offsetWidth + '%)';
+                break;
+              }
+              case 'effect-marvin': {
+                effectImagePreview.style.filter = 'invert(' + uploadEffectVal.offsetWidth * 100 / uploadEffectLine.offsetWidth + '%)';
+                break;
+              }
+              case 'effect-phobos': {
+                effectImagePreview.style.filter = 'blur(' + 3 / uploadEffectLine.offsetWidth * uploadEffectVal.offsetWidth + 'px)';
+                break;
+              }
+              case 'effect-heat': {
+                uploadOverlay.querySelector('.effect-heat').style.filter = 'brightness(' + 3 / uploadEffectLine.offsetWidth * uploadEffectVal.offsetWidth + ')';
+                break;
+              }
+            }
+          }
+        };
+        var onEffectLevelUp = function () {
+          document.removeEventListener('mousemove', onEffectLevelMove);
+          document.removeEventListener('mouseup', onEffectLevelUp);
+        };
+        document.addEventListener('mousemove', onEffectLevelMove);
+        document.addEventListener('mouseup', onEffectLevelUp);
+      });
     }
-    effectImagePreview.classList.add('effect-' + target.value);
   };
   var sendForm = function (evt) {
     var hashTemp;
@@ -97,7 +177,7 @@
     textAreaUploadOverlay.removeEventListener('blur', uploadEscAllow);
   };
   uploadResizeControls.addEventListener('click', uploadSizeControl);
-  uploadEffectControls.addEventListener('click', uploadEffectControl);
+  uploadEffectControls.addEventListener('change', uploadEffectControl);
   uploadFormDescription.addEventListener('invalid', function () {
     if (uploadFormDescription.validity.tooShort) {
       uploadFormDescription.setCustomValidity('Минимальная длина — 30 символов');
@@ -121,6 +201,7 @@
   uploadForm.addEventListener('submit', sendForm);
   window.form = {
     uploadOpenPopup: function () {
+      uploadEffectLevel.classList.add('hidden');
       uploadImage.classList.add('hidden');
       uploadOverlay.classList.remove('hidden');
       uploadFormCancel.addEventListener('click', uploadClosePopup);
