@@ -35,6 +35,32 @@
       }
     }
   };
+  var effectLevelDefault = function () {
+    switch (classFilterName) {
+      case 'effect-chrome': {
+        uploadOverlay.querySelector('.effect-chrome').style.filter = 'grayscale(100%)';
+        break;
+      }
+      case 'effect-sepia': {
+        uploadOverlay.querySelector('.effect-sepia').style.filter = 'sepia(100%)';
+        break;
+      }
+      case 'effect-marvin': {
+        uploadOverlay.querySelector('.effect-marvin').style.filter = 'invert(100%)';
+        break;
+      }
+      case 'effect-phobos': {
+        uploadOverlay.querySelector('.effect-phobos').style.filter = 'blur(3px)';
+        break;
+      }
+      case 'effect-heat': {
+        uploadOverlay.querySelector('.effect-heat').style.filter = 'brightness(3)';
+        break;
+      }
+    }
+    uploadEffectLevelPin.style.left = uploadEffectLine.offsetWidth + 'px';
+    uploadEffectVal.style.width = uploadEffectLine.offsetWidth + 'px';
+  };
   var uploadEffectControl = function (evt) {
     effectImagePreview.style = 'none';
     effectImagePreview.setAttribute('class', 'effect-image-preview');
@@ -48,6 +74,8 @@
       uploadEffectLevel.classList.remove('hidden');
       classFilterName = 'effect-' + target.value;
       effectImagePreview.classList.add(classFilterName);
+      effectLevelDefault();
+      uploadEffectLevel.addEventListener('click', stopBubble);
       uploadEffectLevelPin.addEventListener('mousedown', function (downEvt) {
         startCoordsX = downEvt.clientX;
         var onEffectLevelMove = function (moveEvt) {
@@ -90,6 +118,9 @@
         document.addEventListener('mouseup', onEffectLevelUp);
       });
     }
+  };
+  var stopBubble = function (evt) {
+    evt.stopPropagation();
   };
   var sendForm = function (evt) {
     var hashTemp;
