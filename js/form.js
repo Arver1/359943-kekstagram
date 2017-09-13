@@ -6,7 +6,6 @@
   var effectImagePreview = uploadOverlay.querySelector('.effect-image-preview');
   var uploadFormCancel = uploadOverlay.querySelector('.upload-form-cancel');
   var textAreaUploadOverlay = uploadOverlay.querySelector('.upload-form-description');
-  var uploadResizeControls = uploadOverlay.querySelector('.upload-resize-controls');
   var uploadEffectControls = uploadOverlay.querySelector('.upload-effect-controls');
   var uploadFormDescription = uploadOverlay.querySelector('.upload-form-description');
   var uploadFormHashtags = uploadOverlay.querySelector('.upload-form-hashtags');
@@ -18,23 +17,6 @@
   var uploadOverlayFocus = 0;
   var startCoordsX;
   var classFilterName;
-  var uploadSizeControl = function (evt) {
-    var target = evt.target;
-    var temp;
-    if (target.classList.contains('upload-resize-controls-button-dec')) {
-      temp = uploadResizeControlsValue.value.replace('%', '') - 25;
-      if (temp >= 25 && temp <= 100) {
-        effectImagePreview.style.transform = 'scale(' + temp / 100 + ')';
-        uploadResizeControlsValue.value = temp + '%';
-      }
-    } else if (target.classList.contains('upload-resize-controls-button-inc')) {
-      temp = uploadResizeControlsValue.value.replace('%', '') - 0 + 25;
-      if (temp >= 25 && temp <= 100) {
-        effectImagePreview.style.transform = 'scale(' + temp / 100 + ')';
-        uploadResizeControlsValue.value = temp + '%';
-      }
-    }
-  };
   var effectLevelDefault = function () {
     switch (classFilterName) {
       case 'effect-chrome': {
@@ -176,8 +158,6 @@
     textAreaUploadOverlay.removeEventListener('focus', uploadEscBan);
     textAreaUploadOverlay.removeEventListener('blur', uploadEscAllow);
   };
-  uploadResizeControls.addEventListener('click', uploadSizeControl);
-  uploadEffectControls.addEventListener('change', uploadEffectControl);
   uploadFormDescription.addEventListener('invalid', function () {
     if (uploadFormDescription.validity.tooShort) {
       uploadFormDescription.setCustomValidity('Минимальная длина — 30 символов');
@@ -198,6 +178,8 @@
   uploadFormDescription.addEventListener('click', function () {
     uploadFormDescription.style.border = '';
   });
+  window.initializeScale.adJustScale('.upload-resize-controls', window.initializeScale.uploadSizeControl);
+  uploadEffectControls.addEventListener('change', uploadEffectControl);
   uploadForm.addEventListener('submit', sendForm);
   window.form = {
     uploadOpenPopup: function () {
