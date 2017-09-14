@@ -33,6 +33,13 @@
           showError(xhr.status + ' ' + xhr.statusText);
         }
       });
+      xhr.addEventListener('error', function () {
+        showError('Произошла ошибка соединения');
+      });
+      xhr.addEventListener('timeout', function () {
+        showError('Запрос не успел выполниться за ' + xhr.timeout + 'мс');
+      });
+      xhr.timeout = 10000;
       xhr.send();
     },
     save: function (data, onLoad, onError) {
@@ -46,6 +53,13 @@
           showError(xhr.status + ' ' + xhr.statusText);
         }
       });
+      xhr.addEventListener('error', function () {
+        showError('Произошла ошибка соединения');
+      });
+      xhr.addEventListener('timeout', function () {
+        showError('Запрос не успел выполниться за ' + xhr.timeout + 'мс');
+      });
+      xhr.timeout = 10000;
       xhr.send(data);
     }
   };
