@@ -10,11 +10,19 @@
   var uploadImage = uploadForm.querySelector('.upload-file');
   var uploadEffectLevel = uploadForm.querySelector('.upload-effect-level');
   var uploadOverlayFocus = 0;
+  var onLoad = function () {
+    uploadOverlay.classList.add('hidden');
+    uploadForm.reset();
+    effectImagePreview.setAttribute('class', 'effectImagePreview');
+    effectImagePreview.style.transform = 'scale(1)';
+  };
   var sendForm = function (evt) {
+    var isValid = true;
     var hashTemp;
     var temp = uploadFormHashtags.value;
     if (temp.length < 2 || temp.length > 104) {
       evt.preventDefault();
+      isValid = false;
       uploadFormHashtags.style.border = '2px solid red';
     } else {
       temp = temp.split(' ');
@@ -23,6 +31,7 @@
         hashTemp = temp.split('#');
         if (temp.length > 19 || temp[0] !== '#' || hashTemp.length > 2) {
           uploadFormHashtags.style.border = '2px solid red';
+          isValid = false;
           evt.preventDefault();
         }
       } else {
@@ -30,6 +39,7 @@
           hashTemp = temp[i].split('#');
           if (temp[i][0] !== '#' || temp[i].length > 19 || temp[i].length < 2 || hashTemp.length > 2) {
             uploadFormHashtags.style.border = '2px solid red';
+            isValid = false;
             evt.preventDefault();
             break;
           }
@@ -38,6 +48,7 @@
           for (var j = i + 1; j < temp.length; j++) {
             if (temp[i] === temp[j]) {
               uploadFormHashtags.style.border = '2px solid red';
+              isValid = false;
               evt.preventDefault();
               i = temp.length + 1;
               break;
@@ -45,10 +56,11 @@
           }
         }
       }
+      if (isValid) {
+        evt.preventDefault();
+        window.backend.save(new FormData(uploadForm), onLoad, window.util.onError);
+      }
     }
-    uploadForm.reset();
-    effectImagePreview.setAttribute('class', 'effectImagePreview');
-    effectImagePreview.style.transform = 'scale(1)';
   };
   var uploadEsc = function (evt) {
     if (evt.keyCode === window.util.ESC_KEYCODE && uploadOverlayFocus === 0) {

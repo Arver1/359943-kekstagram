@@ -30,9 +30,6 @@
     galleryOverlayClose.addEventListener('keydown', enterClosePopup);
     document.addEventListener('keydown', escClosePopup);
   };
-  galleryOverlayImage.src = window.pictures[0].url;
-  galleryLikesCount.textContent = window.pictures[0].likes;
-  galleryCommentsCount.textContent = window.pictures[0].randomComments.length;
   hideElement('.upload-overlay');
   openPopup();
   window.preview = {
@@ -46,6 +43,11 @@
       galleryLikesCount.textContent = target.querySelector('.picture-likes').textContent;
       galleryCommentsCount.textContent = target.querySelector('.picture-comments').textContent;
       openPopup();
+    },
+    fillFirstOverlay: function () {
+      galleryOverlayImage.src = document.querySelector('.picture').querySelector('img').src;
+      galleryLikesCount.textContent = document.querySelector('.picture').querySelector('.picture-likes').textContent;
+      galleryCommentsCount.textContent = document.querySelector('.pictures').querySelector('.picture-comments').textContent;
     }
   };
 })();
