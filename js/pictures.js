@@ -14,6 +14,6 @@
       callback();
     }
   };
-  window.backend.load(appendPictures);
+  window.backend.load(appendPictures, window.util.onError);
 
 })();

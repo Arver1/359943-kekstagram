@@ -56,7 +56,7 @@
       }
       if (flag) {
         evt.preventDefault();
-        window.backend.save(new FormData(uploadForm, onLoad));
+        window.backend.save(new FormData(uploadForm, onLoad, window.util.onError));
       }
     }
     uploadForm.reset();
