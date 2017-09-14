@@ -15,5 +15,4 @@
     }
   };
   window.backend.load(appendPictures, window.util.onError);
-
 })();
