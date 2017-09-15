@@ -64,9 +64,6 @@
       element.querySelector('.picture-comments').textContent = sortPictures[i].comments.length;
       div.appendChild(element);
     }
-    if (callback) {
-      callback();
-    }
   };
   window.backend.load(appendPictures, window.util.onError);
 })();
