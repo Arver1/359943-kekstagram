@@ -10,7 +10,7 @@
       xhr.addEventListener('load', function () {
         if (xhr.status === 200) {
           if (onLoad) {
-            onLoad(xhr.response, window.preview.fillFirstOverlay);
+            onLoad(xhr.response);
           }
         } else {
           onError(xhr.status + ' ' + xhr.statusText);

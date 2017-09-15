@@ -9,7 +9,7 @@
   var uploadEffectLevel = uploadOverlay.querySelector('.upload-effect-level');
   var startCoordsX;
   var classFilterName;
-  var effectLevelDefault = function () {
+  var resetEffectLevelDefault = function () {
     switch (classFilterName) {
       case 'effect-chrome': {
         effectImagePreview.style.filter = 'grayscale(100%)';
@@ -47,7 +47,7 @@
         uploadEffectLevel.classList.remove('hidden');
         classFilterName = 'effect-' + target.value;
         effectImagePreview.classList.add(classFilterName);
-        effectLevelDefault();
+        resetEffectLevelDefault();
         uploadEffectLevelPin.addEventListener('mousedown', function (downEvt) {
           startCoordsX = downEvt.clientX;
           var onEffectLevelMove = function (moveEvt) {

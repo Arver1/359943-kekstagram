@@ -20,39 +20,47 @@
     var isValid = true;
     var hashTemp;
     var temp = uploadFormHashtags.value;
-    if (temp.length < 2 || temp.length > 104) {
+    if (temp.length === 1 || temp.length > 104) {
       evt.preventDefault();
       isValid = false;
       uploadFormHashtags.style.border = '2px solid red';
     } else {
-      temp = temp.split(' ');
-      if (temp.length === 1) {
-        temp = temp[0];
-        hashTemp = temp.split('#');
-        if (temp.length > 19 || temp[0] !== '#' || hashTemp.length > 2) {
-          uploadFormHashtags.style.border = '2px solid red';
-          isValid = false;
-          evt.preventDefault();
-        }
-      } else {
-        for (var i = 0; i < temp.length; i++) {
-          hashTemp = temp[i].split('#');
-          if (temp[i][0] !== '#' || temp[i].length > 19 || temp[i].length < 2 || hashTemp.length > 2) {
+      if (temp !== '') {
+        temp = temp.split(' ');
+        if (temp.length === 1) {
+          temp = temp[0];
+          hashTemp = temp.split('#');
+          if (temp.length > 19 || temp[0] !== '#' || hashTemp.length > 2) {
             uploadFormHashtags.style.border = '2px solid red';
             isValid = false;
             evt.preventDefault();
-            break;
           }
-        }
-        for (i = 0; i < temp.length; i++) {
-          for (var j = i + 1; j < temp.length; j++) {
-            if (temp[i] === temp[j]) {
-              uploadFormHashtags.style.border = '2px solid red';
-              isValid = false;
-              evt.preventDefault();
-              i = temp.length + 1;
-              break;
+        } else {
+          if (temp.length <= 5) {
+            for (var i = 0; i < temp.length; i++) {
+              hashTemp = temp[i].split('#');
+              if (temp[i][0] !== '#' || temp[i].length > 19 || temp[i].length < 2 || hashTemp.length > 2) {
+                uploadFormHashtags.style.border = '2px solid red';
+                isValid = false;
+                evt.preventDefault();
+                break;
+              }
             }
+            for (i = 0; i < temp.length; i++) {
+              for (var j = i + 1; j < temp.length; j++) {
+                if (temp[i] === temp[j]) {
+                  uploadFormHashtags.style.border = '2px solid red';
+                  isValid = false;
+                  evt.preventDefault();
+                  i = temp.length + 1;
+                  break;
+                }
+              }
+            }
+          } else {
+            uploadFormHashtags.style.border = '2px solid red';
+            isValid = false;
+            evt.preventDefault();
           }
         }
       }
