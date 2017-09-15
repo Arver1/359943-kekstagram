@@ -3,6 +3,16 @@
   var div = document.querySelector('.pictures');
   var template = document.getElementById('picture-template').content;
   var filter = document.querySelector('.filters');
+  var updatePictures = function (sortPictures) {
+    div.innerHTML = '';
+    for (var i = 0; i < sortPictures.length; i++) {
+      var element = template.cloneNode(true);
+      element.querySelector('img').src = sortPictures[i].url;
+      element.querySelector('.picture-likes').textContent = sortPictures[i].likes;
+      element.querySelector('.picture-comments').textContent = sortPictures[i].comments.length;
+      div.appendChild(element);
+    }
+  };
   var appendPictures = function (pictures, callback) {
     var sortPictures = pictures;
     filter.classList.remove('hidden');
@@ -43,14 +53,9 @@
           break;
         }
       }
-      div.innerHTML = '';
-      for (var i = 0; i < sortPictures.length; i++) {
-        var element = template.cloneNode(true);
-        element.querySelector('img').src = sortPictures[i].url;
-        element.querySelector('.picture-likes').textContent = sortPictures[i].likes;
-        element.querySelector('.picture-comments').textContent = sortPictures[i].comments.length;
-        div.appendChild(element);
-      }
+      window.debounce(function () {
+        updatePictures(sortPictures);
+      }, 500);
     });
     for (var i = 0; i < sortPictures.length; i++) {
       var element = template.cloneNode(true);
