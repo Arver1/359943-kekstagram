@@ -20,7 +20,7 @@
     var isValid = true;
     var hashTemp;
     var temp = uploadFormHashtags.value;
-    if (temp.length < 2 || temp.length > 104) {
+    if (temp.length === 1 || temp.length > 104) {
       evt.preventDefault();
       isValid = false;
       uploadFormHashtags.style.border = '2px solid red';

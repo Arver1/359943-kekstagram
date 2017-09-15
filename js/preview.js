@@ -8,12 +8,12 @@
   var hideElement = function (className) {
     document.querySelector(className).classList.add('hidden');
   };
-  var escClosePopup = function (evt) {
+  var onEscClosePopup = function (evt) {
     if (evt.keyCode === window.util.ESC_KEYCODE) {
       closePopup();
     }
   };
-  var enterClosePopup = function (evt) {
+  var onEnterClosePopup = function (evt) {
     if (evt.keyCode === window.util.ENTER_KEYCODE) {
       closePopup();
     }
@@ -21,14 +21,14 @@
   var closePopup = function () {
     galleryOverlay.classList.add('hidden');
     galleryOverlayClose.removeEventListener('click', closePopup);
-    document.removeEventListener('keydown', escClosePopup);
-    galleryOverlayClose.removeEventListener('keydown', enterClosePopup);
+    document.removeEventListener('keydown', onEscClosePopup);
+    galleryOverlayClose.removeEventListener('keydown', onEnterClosePopup);
   };
   var openPopup = function () {
     galleryOverlay.classList.remove('hidden');
     galleryOverlayClose.addEventListener('click', closePopup);
-    galleryOverlayClose.addEventListener('keydown', enterClosePopup);
-    document.addEventListener('keydown', escClosePopup);
+    galleryOverlayClose.addEventListener('keydown', onEnterClosePopup);
+    document.addEventListener('keydown', onEscClosePopup);
   };
   hideElement('.upload-overlay');
   openPopup();
